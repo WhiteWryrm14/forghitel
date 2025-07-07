@@ -38,4 +38,13 @@ jobs:
         git config --global user.email "actions@github.com"
         git remote add gitlab "https://oauth2:${GITLAB_TOKEN}@gitlab.com/BlackWyrm14/forghitel.git"
         BRANCH=${{ github.head_ref || github.ref_name }}
+    
+        # Recupera gli ultimi aggiornamenti da GitLab
+        git fetch gitlab $BRANCH
+    
+        # Integra eventuali modifiche (merge automatico)
+        git merge --strategy=recursive --strategy-option=theirs gitlab/$BRANCH || true
+    
+        # Ora puoi pushare
         git push gitlab HEAD:refs/heads/$BRANCH
+

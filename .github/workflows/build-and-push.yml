@@ -1,13 +1,13 @@
 name: Build and Push to GitLab
 
 on:
-  pull_request:
-    branches: [main]
   push:
     branches: [main]
+  pull_request:
+    types: [opened, synchronize]
 
 jobs:
-  build:
+  build-and-sync:
     runs-on: ubuntu-latest
 
     steps:
@@ -15,6 +15,7 @@ jobs:
       uses: actions/checkout@v4
       with:
         fetch-depth: 0
+        ref: ${{ github.head_ref }}
 
     - name: Setup JDK 21
       uses: actions/setup-java@v4
@@ -28,12 +29,12 @@ jobs:
     - name: Build with Gradle
       run: ./gradlew build
 
-    - name: Push changes to GitLab
-      if: github.event_name == 'push' || github.event.pull_request.merged == true
+    - name: Push branch to GitLab
+      if: github.event_name == 'pull_request'
       env:
         GITLAB_TOKEN: ${{ secrets.GITLAB_TOKEN }}
       run: |
         git config --global user.name "github-actions"
         git config --global user.email "actions@github.com"
         git remote add gitlab "https://oauth2:${GITLAB_TOKEN}@gitlab.com/BlackWyrm14/forghitel.git"
-        git push gitlab main --force
+        git push gitlab HEAD:refs/heads/${{ github.head_ref }} --force

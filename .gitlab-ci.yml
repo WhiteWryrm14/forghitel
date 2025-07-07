@@ -29,3 +29,12 @@ build_project:
 include:
   - template: Security/SAST.gitlab-ci.yml
   - template: Security/Secret-Detection.gitlab-ci.yml
+
+# Override dei job per impostare la scadenza degli artifacts
+sast:
+  artifacts:
+    expire_in: 7 days
+
+secret_detection:
+  artifacts:
+    expire_in: 7 days  

@@ -1,0 +1,13 @@
+{
+  "itemGroup.forghitel": "Example Mod Tab",
+  "block.forghitel.example_block": "Example Block",
+  "item.forghitel.example_item": "Example Item",
+
+  "forghitel.configuration.title": "Forghitel  Configs",
+  "forghitel.configuration.section.forghitel.common.toml": "Forghitel  Configs",
+  "forghitel.configuration.section.forghitel.common.toml.title": "Forghitel  Configs",
+  "forghitel.configuration.items": "Item List",
+  "forghitel.configuration.logDirtBlock": "Log Dirt Block",
+  "forghitel.configuration.magicNumberIntroduction": "Magic Number Text",
+  "forghitel.configuration.magicNumber": "Magic Number"
+}

@@ -1,16 +1,31 @@
-# You can override the included template(s) by including variable overrides
-# SAST customization: https://docs.gitlab.com/ee/user/application_security/sast/#customizing-the-sast-settings
-# Secret Detection customization: https://docs.gitlab.com/user/application_security/secret_detection/pipeline/configure
-# Dependency Scanning customization: https://docs.gitlab.com/ee/user/application_security/dependency_scanning/#customizing-the-dependency-scanning-settings
-# Container Scanning customization: https://docs.gitlab.com/ee/user/application_security/container_scanning/#customizing-the-container-scanning-settings
-# Note that environment variables can be set in several places
-# See https://docs.gitlab.com/ee/ci/variables/#cicd-variable-precedence
+# CI/CD pipeline con Build, Secret Detection e SAST
+
 stages:
-- test
-- secret-detection
+  - build
+  - test
+  - sast
+  - secret-detection
+
 variables:
   SECRET_DETECTION_ENABLED: 'true'
-secret_detection:
-  stage: secret-detection
+  SAST_EXCLUDED_ANALYZERS: 'brakeman'  # <-- opzionale, dipende dalla tecnologia del tuo progetto
+
+# JOB: Build del progetto con Gradle
+build_project:
+  stage: build
+  image: eclipse-temurin:21-jdk
+  before_script:
+    - apt-get update && apt-get install -y git
+    - git config --global --add safe.directory $CI_PROJECT_DIR
+    - chmod +x ./gradlew
+  script:
+    - ./gradlew build
+  only:
+    - merge_requests
+    - main
+    - master
+
+# Inclusione dei template di sicurezza GitLab
 include:
-- template: Security/Secret-Detection.gitlab-ci.yml
+  - template: Security/SAST.gitlab-ci.yml
+  - template: Security/Secret-Detection.gitlab-ci.yml

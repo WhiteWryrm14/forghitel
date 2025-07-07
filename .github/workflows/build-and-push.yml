@@ -1,0 +1,39 @@
+name: Build and Push to GitLab
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Setup JDK 21
+      uses: actions/setup-java@v4
+      with:
+        java-version: '21'
+        distribution: 'temurin'
+
+    - name: Make Gradle wrapper executable
+      run: chmod +x ./gradlew
+
+    - name: Build with Gradle
+      run: ./gradlew build
+
+    - name: Push changes to GitLab
+      if: github.event_name == 'push' || github.event.pull_request.merged == true
+      env:
+        GITLAB_TOKEN: ${{ secrets.GITLAB_TOKEN }}
+      run: |
+        git config --global user.name "github-actions"
+        git config --global user.email "actions@github.com"
+        git remote add gitlab "https://oauth2:${GITLAB_TOKEN}@gitlab.com/BlackWyrm14/forghitel.git"
+        git push gitlab main --force
